@@ -34,9 +34,8 @@ arm_pitch=180*$t; //arm up down rotation
 elbow_roll=90*$t;
 forearm_pitch=90*$t;
 wrist_roll=90*$t;
-hand_pitch=90*$t;
-finger_pitch=90*$t;
-
+hand_pitch=90*(1+sin(4*360*$t))/2;
+finger_pitch=90*(1+sin(4*360*$t))/2;
 
 //Creating the robot arm
 base(base_width,thick,1);
