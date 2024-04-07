@@ -1,7 +1,7 @@
 //6 DOF robot generator
 
 //General parameters
-$fn=16;
+$fn=24;
 del=1; //small delta
 hole=5; //hole diameter in mm
 nut_d=10; //corner to corner nut diameter
@@ -10,19 +10,28 @@ thick=5; //part thickness
 
 //Base params
 base_width=50;
-shoulder_yaw=0; //Shoulder left to right rotation. Zero is toward the front
 
 //Shoulder params
 riser_offset=-10;
 riser_space=5;
 riser_diam=40;
-arm_pitch=180*$t; //arm up down rotation. Zero is toward the front
 
 //Arm params
 arm_width=30;
 arm_length=30;
-elbow_roll=90*$t;
 
+//Forearm params
+forearm_width=24;
+forearm_length=20;
+
+//Hand params
+hand_width=20;
+hand_length=30;
+
+//Rotations
+shoulder_yaw=360*$t; //Shoulder left to right rotation
+arm_pitch=180*$t; //arm up down rotation
+elbow_roll=90*$t;
 forearm_pitch=90*$t;
 wrist_roll=90*$t;
 hand_pitch=90*$t;
@@ -52,7 +61,7 @@ module base(base_w,base_h,child=0){
         }
     }
     if(child){
-        translate([0,0,thick]) color("blue")
+        translate([0,0,thick])
         rotate([0,0,shoulder_yaw])
         shoulder(base_width,thick,riser_offset,riser_space,riser_diam,1);
     }
@@ -106,9 +115,9 @@ module elbow(width,length,child=0){
     if(child){
         translate([width/2-thick,0,length])
         rotate([0,-90,0])
-        rotate([0,0,forearm_pitch])
+        rotate([0,0,forearm_pitch]) color("blue")
         //cylinder(10,0,5);
-        forearm(width,length,1);
+        forearm(forearm_width,forearm_length,1);
     }
 }
 
@@ -130,23 +139,26 @@ module wrist(width,length,child=0){
         rotate([0,-90,0]){
             //cylinder(10,0,5);
             rotate([0,0,hand_pitch])
-            hand(width,width*2,1);
+            hand(hand_width,hand_length);
             translate([0,0,thick*2])
             rotate([180,0,0])
             rotate([0,0,finger_pitch])
-            hand(width,width*2,1);
+            hand(hand_width,hand_length);
         }
     }
 }
 
-module hand(width,length,child=0){
+module hand(width,length){
+    finger_start=width/2;
+    finger_gap=(length-finger_start)/2;
+    finger_tip=length-finger_start-finger_gap;
     difference(){
         make_tombstone(width,length,thick);
         union(){
-            translate([width/2,-width/2-1,-1])
-            cube([width/2,width*0.75+1,thick+2]);
-            translate([width-1,-width/2-1,-1])
-            cube([width+2,width*0.5+1,thick+2]);
+            translate([  finger_start              ,-width/2-1    ,-1])
+            cube([       finger_gap                ,width*0.75+1  ,thick+2]);
+            translate([  finger_start+finger_gap-1 ,-width/2-1    ,-1])
+            cube([       finger_tip+2              ,width/2+1     ,thick+2]);
         }
     }
 }
